@@ -29,6 +29,12 @@ class SeedVR2LoadDiTModel(io.ComfyNode):
         devices = get_device_list()
         dit_models = get_available_dit_models()
         
+        # Handle CPU-only environments where devices list might be empty
+        default_device = devices[0] if devices else "cpu"
+        # If devices list is empty, add "cpu" as an option
+        if not devices:
+            devices = ["cpu"]
+        
         return io.Schema(
             node_id="SeedVR2LoadDiTModel",
             display_name="SeedVR2 (Down)Load DiT Model",
@@ -51,7 +57,7 @@ class SeedVR2LoadDiTModel(io.ComfyNode):
                 ),
                 io.Combo.Input("device",
                     options=devices,
-                    default=devices[0],
+                    default=default_device,
                     tooltip="GPU device for DiT model inference (upscaling phase)"
                 ),
                 io.Int.Input("blocks_to_swap",
