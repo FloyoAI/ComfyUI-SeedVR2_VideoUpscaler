@@ -30,6 +30,12 @@ class SeedVR2LoadVAEModel(io.ComfyNode):
         devices = get_device_list()
         vae_models = get_available_vae_models()
         
+        # Handle CPU-only environments where devices list might be empty
+        default_device = devices[0] if devices else "cpu"
+        # If devices list is empty, add "cpu" as an option
+        if not devices:
+            devices = ["cpu"]
+        
         return io.Schema(
             node_id="SeedVR2LoadVAEModel",
             display_name="SeedVR2 (Down)Load VAE Model",
@@ -52,7 +58,7 @@ class SeedVR2LoadVAEModel(io.ComfyNode):
                 ),
                 io.Combo.Input("device",
                     options=devices,
-                    default=devices[0],
+                    default=default_device,
                     tooltip="GPU device for VAE model inference (encoding/decoding phases)"
                 ),
                 io.Boolean.Input("encode_tiled",
