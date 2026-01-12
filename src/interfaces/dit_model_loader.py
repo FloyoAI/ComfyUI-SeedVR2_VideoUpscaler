@@ -29,9 +29,15 @@ class SeedVR2LoadDiTModel(io.ComfyNode):
         devices = get_device_list()
         dit_models = get_available_dit_models()
         
-        # Handle CPU-only environments where devices list might be empty
-        default_device = devices[0] if devices else "cpu"
-        # If devices list is empty, add "cpu" as an option
+        # Always include "cuda:0" in options for distributed setups (UI on CPU, processing on GPU)
+        # This allows CPU-only containers to show cuda:0 as default even when CUDA isn't available locally
+        if "cuda:0" not in devices:
+            devices.insert(0, "cuda:0")
+        
+        # Always default to "cuda:0" for distributed setups
+        default_device = "cuda:0"
+        
+        # If devices list is empty (shouldn't happen now, but safety check), add "cpu" as an option
         if not devices:
             devices = ["cpu"]
         
